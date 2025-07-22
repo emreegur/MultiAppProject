@@ -1,0 +1,193 @@
+@model MyWebApp.Models.UserAndLogViewModel
+
+@{
+    ViewData["Title"] = "Users";
+    Layout = "/Views/Shared/Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Kullanıcılar</h2>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">Yeni Kullanıcı Ekle</button>
+    </div>
+
+    <table id="kullanicilarTable" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>İsim</th>
+            <th>Soyisim</th>
+            <th>E-posta</th>
+            <th>Kullanıcı Adı</th>
+            <th>Şifre</th>
+            <th>Kayıt Tarihi</th>
+            <th>Rol</th>
+            <th>İşlemler</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (Model.Users != null)
+        {
+            foreach (var kullanici in Model.Users)
+            {
+                <tr>
+                    <td>@kullanici.Id</td>
+                    <td>@kullanici.Isim</td>
+                    <td>@kullanici.Soyisim</td>
+                    <td>@kullanici.Eposta</td>
+                    <td>@kullanici.KullaniciAdi</td>
+                    <td>@kullanici.Sifre</td>
+                    <td>@(kullanici.KayitTarihi.ToString("dd/MM/yyyy"))</td>
+                    <td>@(kullanici.Role?.RoleName ?? "Belirtilmemiş")</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm btn-edit-user"
+                                data-id="@kullanici.Id"
+                                data-isim="@kullanici.Isim"
+                                data-soyisim="@kullanici.Soyisim"
+                                data-eposta="@kullanici.Eposta"
+                                data-kullaniciadi="@kullanici.KullaniciAdi"
+                                data-sifre="@kullanici.Sifre"
+                                data-roleid="@(kullanici.RoleId ?? 0)"
+                                data-bs-toggle="modal" data-bs-target="#updateUserModal">
+                            Güncelle
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="9">Hiç kullanıcı bulunamadı.</td></tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<!-- Kullanıcı Güncelle Modal -->
+<div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-action="UpdateUser" asp-controller="Home">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateUserModalLabel">Kullanıcıyı Güncelle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="updateUserId" name="Id" />
+                    <div class="mb-2">
+                        <label>İsim</label>
+                        <input type="text" id="updateUserIsim" name="Isim" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Soyisim</label>
+                        <input type="text" id="updateUserSoyisim" name="Soyisim" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>E-posta</label>
+                        <input type="email" id="updateUserEposta" name="Eposta" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" id="updateUserKullaniciAdi" name="KullaniciAdi" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Şifre</label>
+                        <input type="password" id="updateUserSifre" name="Sifre" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Rol</label>
+                        <select id="updateUserRoleId" name="RoleId" class="form-control" required>
+                            <option value="">Seçiniz...</option>
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role.Id">@role.RoleName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Yeni Kullanıcı Ekle Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-action="AddUser" asp-controller="Home">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Yeni Kullanıcı Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label>İsim</label>
+                        <input type="text" name="Isim" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Soyisim</label>
+                        <input type="text" name="Soyisim" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>E-posta</label>
+                        <input type="email" name="Eposta" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" name="KullaniciAdi" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Şifre</label>
+                        <input type="password" name="Sifre" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Rol</label>
+                        <select name="RoleId" class="form-control" required>
+                            <option value="">Seçiniz...</option>
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role.Id">@role.RoleName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-success">Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#kullanicilarTable').DataTable({
+                "language": {
+                    "url": "/js/i18n/tr.json" // Yerel dosya kullan, CORS hatasını önlemek için
+                }
+            });
+
+            $('.btn-edit-user').on('click', function () {
+                const button = $(this);
+                $('#updateUserId').val(button.data('id'));
+                $('#updateUserIsim').val(button.data('isim'));
+                $('#updateUserSoyisim').val(button.data('soyisim'));
+                $('#updateUserEposta').val(button.data('eposta'));
+                $('#updateUserKullaniciAdi').val(button.data('kullaniciadi'));
+                $('#updateUserSifre').val(button.data('sifre'));
+                $('#updateUserRoleId').val(button.data('roleid'));
+            });
+        });
+    </script>
+}

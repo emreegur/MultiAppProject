@@ -1,0 +1,236 @@
+﻿@model MyWebApp.Models.LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<!-- Font Awesome CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+    .login-container {
+        max-width: 400px;
+        margin: 100px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .form-title {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    /* Header styles */
+    .header {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+    .header-title {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .logout-btn {
+        text-decoration: none;
+        color: white;
+        background-color: #dc3545;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+    .profile-menu {
+        position: relative;
+    }
+    .profile-dropdown {
+        position: absolute;
+        top: 35px;
+        right: 0;
+        z-index: 1000;
+        display: none;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        min-width: 150px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .profile-dropdown form {
+        margin: 0;
+    }
+    .profile-dropdown button {
+        width: 100%;
+        border: none;
+        background: none;
+        padding: 10px;
+        text-align: left;
+        cursor: pointer;
+        color: #dc3545;
+    }
+    .profile-dropdown button:hover {
+        background-color: #f8d7da;
+    }
+    .avatar-btn {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #6c757d;
+        color: white;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .avatar-btn:hover {
+        transform: scale(1.1);
+    }
+</style>
+
+<!-- Header with navigation and avatar button (visible only when authenticated) -->
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="navbar-brand" href="#">MyWebApp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-between" id="navbarContent">
+                <div class="navbar-nav">
+                    <a class="nav-link" href="@Url.Action("Dashboard", "Home")">Dashboard</a>
+                    <a class="nav-link" href="@Url.Action("Users", "Home")">Users</a>
+                    <a class="nav-link" href="@Url.Action("Logs", "Home")">Logs</a>
+                </div>
+
+                <div class="profile-menu d-flex align-items-center position-relative">
+                    <div id="avatarButton" class="avatar-btn">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div id="profileDropdown" class="profile-dropdown">
+                        <form asp-action="LogOut" asp-controller="Home" method="post">
+                            <button type="submit">Çıkış Yap</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+}
+
+
+<div class="container">
+    <div class="login-container">
+        <!-- Page title -->
+        <h3 class="form-title">Emre Giriş</h3>
+
+        <!-- Display login error if present -->
+        @if (ViewBag.LoginError != null)
+        {
+            <div class="alert alert-danger">@ViewBag.LoginError</div>
+        }
+
+        <!-- Login form -->
+        <form asp-action="Login" method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">E-posta</label>
+                <input type="email" class="form-control" name="Email" required>
+                @if (ViewData.ModelState["Email"]?.Errors.Any() == true)
+                {
+                     var emailError = ViewData.ModelState["Email"]?.Errors?.FirstOrDefault()?.ErrorMessage;
+                    if (!string.IsNullOrEmpty(emailError))
+                    {
+                    <div class="text-danger">@emailError</div>
+                }
+                }
+            </div>
+            <div class="mb-3">
+                <label for="sifre" class="form-label">Şifre</label>
+                <input type="password" class="form-control" name="Sifre" required>
+                @if (ViewData.ModelState["Sifre"]?.Errors.Any() == true)
+                {
+                     var sifreError = ViewData.ModelState["Sifre"]?.Errors?.FirstOrDefault()?.ErrorMessage;
+                    if (!string.IsNullOrEmpty(sifreError))
+                    {
+                    <div class="text-danger">@sifreError</div>
+                    }
+                }
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Giriş Yap</button>
+            </div>
+        </form>
+
+        <!-- Links for registration and password recovery -->
+        <div class="mt-3 text-center">
+            <a href="@Url.Action("Register", "Home")">Üye Ol</a>
+        </div>
+    </div>
+</div>
+
+<!-- Include external scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
+
+<!-- Display login error notification -->
+@if (ViewBag.LoginError != null)
+{
+    <script>
+        Swal.fire({
+            title: 'Hata!',
+            text: '@ViewBag.LoginError',
+            icon: 'error',
+            confirmButtonText: 'Tamam'
+        });
+        $(function () {
+            $.notify('@Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.LoginError))', {
+                className: 'error',
+                position: 'bottom right',
+                autoHideDelay: 5000,
+                showDuration: 300,
+                hideDuration: 3000
+            });
+        });
+    </script>
+}
+
+<!-- Display logout success notification -->
+@if (TempData["Message"] != null)
+{
+    <script>
+        Swal.fire({
+            title: 'Başarılı!',
+            text: '@TempData["Message"]',
+            icon: 'success',
+            confirmButtonText: 'Tamam'
+        });
+        $(function () {
+            $.notify('@Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Message"]))', {
+                className: 'success',
+                position: 'bottom right',
+                autoHideDelay: 5000,
+                showDuration: 300,
+                hideDuration: 3000
+            });
+        });
+    </script>
+}
+
+<!-- Toggle profile menu -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const avatarBtn = document.getElementById("avatarButton");
+        const dropdown = document.getElementById("profileDropdown");
+
+        avatarBtn.addEventListener("click", function () {
+            dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!avatarBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = "none";
+            }
+        });
+    });
+</script>

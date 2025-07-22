@@ -1,0 +1,30 @@
+@model MyWebApp.Models.UserAndLogViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "/Views/Shared/Layout.cshtml";
+}
+
+<div class="container mt-3">
+    <h2>Dashboard'a Hoş Geldin!</h2>
+    <p>Başarıyla giriş yaptın.</p>
+</div>
+
+@section Scripts {
+    @if (TempData["ShowWelcomePopup"] != null)
+    {
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Hoş Geldin!',
+                text: 'Dashboard\'a başarıyla giriş yaptın.',
+                showConfirmButton: false,
+                timer: 700,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'swal-small'
+                },
+            });
+        </script>
+    }
+}
