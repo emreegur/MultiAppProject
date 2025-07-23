@@ -4,9 +4,12 @@
     Layout = "/Views/Shared/Layout.cshtml";
 }
 
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+
 <div class="container mt-4">
     <h2>Log Kayıtları</h2>
-    <table class="table table-bordered table-sm">
+
+    <table id="logTable" class="table table-bordered table-sm display">
         <thead>
             <tr>
                 <th>Zaman</th>
@@ -30,8 +33,27 @@
             }
             else
             {
-                <tr><td colspan="4">Hiç log kaydı bulunamadı.</td></tr>
+                <tr>
+                    <td colspan="4" class="text-center">Hiç log kaydı bulunamadı.</td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#logTable').DataTable({
+                pageLength: 20,
+                lengthMenu: [5, 10, 25, 50],
+                order: [[0, 'desc']],
+                language: {
+                    url: "/js/i18n/tr.json"
+                }
+            });
+        });
+    </script>
+}

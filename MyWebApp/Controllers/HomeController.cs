@@ -284,6 +284,33 @@ public async Task<IActionResult> Register(RegisterModel model)
             return View(viewModel);
         }
 
+        [HttpPost]
+public async Task<IActionResult> GetLogs()
+{
+    var draw = Request.Form["draw"].FirstOrDefault();
+    var start = Convert.ToInt32(Request.Form["start"].FirstOrDefault());
+    var length = Convert.ToInt32(Request.Form["length"].FirstOrDefault());
+
+    int page = (start / length) + 1;
+    int pageSize = length;
+
+    var response = await _httpClient.GetAsync($"api/auth/logs/paged?page={page}&pageSize={pageSize}");
+    if (!response.IsSuccessStatusCode)
+        return Json(new { recordsTotal = 0, recordsFiltered = 0, data = new List<object>() });
+
+    var json = await response.Content.ReadAsStringAsync();
+    var apiResult = JsonConvert.DeserializeObject<dynamic>(json);
+
+    return Json(new
+    {
+        draw = draw,
+        recordsTotal = (int)apiResult!.recordsTotal,
+        recordsFiltered = (int)apiResult.recordsFiltered,
+        data = apiResult.data
+    });
+}
+
+
         [Authorize]
         public async Task<IActionResult> Users()
         {

@@ -21,7 +21,7 @@ namespace MyWebApp.Entities
     public class LogEntry
     {
         public int Id { get; set; }
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime Timestamp { get; set; } = DateTime.Now;
         public required string Level { get; set; }
         public required string Username { get; set; }
         public required string Message { get; set; }

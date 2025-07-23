@@ -54,7 +54,7 @@ namespace MyNewApiProject.Controllers
                     new Claim("RoleId", kullanici.RoleId?.ToString() ?? ""),
                     new Claim(JwtRegisteredClaimNames.Jti, jti)
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpireMinutes"] ?? "60")),
+                Expires = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpireMinutes"] ?? "60")),
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"],
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -134,7 +134,7 @@ namespace MyNewApiProject.Controllers
                 Eposta = register.Eposta,
                 KullaniciAdi = register.KullaniciAdi,
                 Sifre = register.Sifre, 
-                KayitTarihi = DateTime.UtcNow,
+                KayitTarihi = DateTime.Now,
                 RoleId = 2
             };
 
@@ -258,7 +258,7 @@ namespace MyNewApiProject.Controllers
             if (await _context.Kullanicilar.AnyAsync(x => x.KullaniciAdi == kullanici.KullaniciAdi))
                 return BadRequest(new { message = "Bu kullanıcı adı zaten alınmış." });
 
-            kullanici.KayitTarihi = DateTime.UtcNow;
+            kullanici.KayitTarihi = DateTime.Now;
 
             _context.Kullanicilar.Add(kullanici);
             await _context.SaveChangesAsync();
@@ -280,7 +280,7 @@ namespace MyNewApiProject.Controllers
                 Level = log.Level,
                 Message = log.Message,
                 Username = log.Username,
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.Now
             };
 
             _context.LogEntries.Add(entry);
@@ -296,6 +296,23 @@ namespace MyNewApiProject.Controllers
             var logs = _context.LogEntries.OrderByDescending(l => l.Timestamp).ToList();
             return Ok(logs);
         }
+
+        // GET: api/auth/logs/paged
+[HttpGet("logs/paged")]
+public IActionResult GetPagedLogs([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+{
+    var query = _context.LogEntries.OrderByDescending(l => l.Timestamp);
+    var total = query.Count();
+    var logs = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+    return Ok(new
+    {
+        recordsTotal = total,
+        recordsFiltered = total,
+        data = logs
+    });
+}
+
 
         // POST: api/auth/cache-set
         [HttpPost("cache-set")]
