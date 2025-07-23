@@ -228,29 +228,29 @@ public async Task<IActionResult> Register(RegisterModel model)
 {
     if (!ModelState.IsValid)
         return View(model);
-
+    
     try
-    {
-        var json = JsonConvert.SerializeObject(model);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
+            {
+                var json = JsonConvert.SerializeObject(model);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PostAsync("api/auth/register", content);
+                var response = await _httpClient.PostAsync("api/auth/register", content);
 
-        if (response.IsSuccessStatusCode)
-        {
-            TempData["SuccessMessage"] = "Kayıt başarılı!";
-            return RedirectToAction("Index");
-        }
-        else
-        {
-            var error = await response.Content.ReadAsStringAsync();
-            ModelState.AddModelError(string.Empty, $"Kayıt başarısız: {error}");
-        }
-    }
-    catch (Exception ex)
-    {
-        ModelState.AddModelError(string.Empty, $"Hata oluştu: {ex.Message}");
-    }
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Kayıt başarılı!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError(string.Empty, $"Kayıt başarısız: {error}");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Hata oluştu: {ex.Message}");
+            }
 
     return View(model);
 }

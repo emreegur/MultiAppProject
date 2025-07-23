@@ -48,8 +48,8 @@ namespace MyNewApiProject.Controllers
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name, kullanici.KullaniciAdi),
-                    new Claim(ClaimTypes.Email, kullanici.Eposta),
+                    new Claim(ClaimTypes.Name, kullanici.KullaniciAdi!),
+                    new Claim(ClaimTypes.Email, kullanici.Eposta!),
                     new Claim("UserId", kullanici.Id.ToString()),
                     new Claim("RoleId", kullanici.RoleId?.ToString() ?? ""),
                     new Claim(JwtRegisteredClaimNames.Jti, jti)
@@ -133,9 +133,9 @@ namespace MyNewApiProject.Controllers
                 Soyisim = register.Soyisim,
                 Eposta = register.Eposta,
                 KullaniciAdi = register.KullaniciAdi,
-                Sifre = register.Sifre, // Düz metin olarak kaydet
+                Sifre = register.Sifre, 
                 KayitTarihi = DateTime.UtcNow,
-                RoleId = register.RoleId
+                RoleId = 2
             };
 
             _context.Kullanicilar.Add(kullanici);
